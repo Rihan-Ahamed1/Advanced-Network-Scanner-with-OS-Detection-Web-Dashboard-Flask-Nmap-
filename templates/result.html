@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sentinel | Audit Report</title>
+    <style>
+        :root {
+            --bg: #020617;
+            --panel: #0f172a;
+            --primary: #38bdf8;
+            --accent: #22c55e;
+            --border: rgba(255,255,255,0.05);
+        }
+
+        body {
+            background: var(--bg);
+            color: white;
+            font-family: 'Consolas', monospace;
+            padding: 30px;
+            margin: 0;
+        }
+
+        .report-header {
+            max-width: 900px;
+            margin: 0 auto 30px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            background: var(--panel);
+        }
+
+        .results-container { max-width: 900px; margin: 0 auto; }
+
+        .host-card {
+            background: var(--panel);
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .host-header {
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(56, 189, 248, 0.05);
+        }
+
+        .ip-addr { color: var(--accent); font-weight: bold; font-size: 18px; }
+
+        .os-badge {
+            font-size: 13px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .port-table { width: 100%; border-collapse: collapse; }
+        .port-table th { text-align: left; padding: 12px 25px; background: rgba(0,0,0,0.2); color: #64748b; font-size: 11px; }
+        .port-table td { padding: 12px 25px; border-top: 1px solid var(--border); font-size: 14px; }
+        .status-open { color: var(--accent); font-weight: bold; }
+
+        .btn-back {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: var(--primary);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="report-header">
+        <h1 style="margin:0; font-size: 22px;">NETWORK_AUDIT_LOG</h1>
+        <p style="margin:5px 0 0; color: #64748b;">Status: DATA_ACQUIRED</p>
+    </div>
+
+    <div class="results-container">
+        {% for host in data %}
+        <div class="host-card">
+            <div class="host-header">
+                <span class="ip-addr">📡 {{ host.ip }}</span>
+                <span class="os-badge">
+                    {% if "Windows" in host.os %}<span style="color: #00a4ef;">🪟 {{ host.os }}</span>
+                    {% elif "Linux" in host.os %}<span style="color: #f8fafc;">🐧 {{ host.os }}</span>
+                    {% elif "Apple" in host.os or "iOS" in host.os %}<span style="color: #ffffff;">🍎 {{ host.os }}</span>
+                    {% elif "Android" in host.os %}<span style="color: #3ddc84;">🤖 {{ host.os }}</span>
+                    {% else %}<span style="color: var(--primary);">🧠 {{ host.os }}</span>
+                    {% endif %}
+                </span>
+            </div>
+
+            <table class="port-table">
+                <thead>
+                    <tr><th>Access Point</th><th>Protocol</th><th>State</th></tr>
+                </thead>
+                <tbody>
+                    {% if host.ports %}
+                        {% for port in host.ports %}
+                        <tr>
+                            <td>PORT {{ port }}</td>
+                            <td>TCP/IP</td>
+                            <td class="status-open">● OPEN</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="3" style="color:#ef4444; padding: 25px; text-align: center;">[!] NO EXPOSED SERVICES DETECTED</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+
+        <a href="/" class="btn-back">⬅ RETURN_TO_COMMAND_CENTER</a>
+    </div>
+
+</body>
+</html>
