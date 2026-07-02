@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>Sentinel | Audit Report</title>
+
+<style>
+
+:root{
+    --bg:#020617;
+    --panel:#0f172a;
+    --primary:#38bdf8;
+    --accent:#22c55e;
+    --border:rgba(255,255,255,0.05);
+}
+
+body{
+    background:var(--bg);
+    color:white;
+    font-family:Consolas;
+    padding:30px;
+}
+
+.report-header{
+    max-width:900px;
+    margin:auto;
+    margin-bottom:30px;
+    padding:20px;
+    background:var(--panel);
+    border-left:4px solid var(--primary);
+}
+
+.host-card{
+    background:var(--panel);
+    max-width:900px;
+    margin:auto;
+    margin-bottom:20px;
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid var(--border);
+}
+
+.host-header{
+    padding:15px 25px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:rgba(56,189,248,0.05);
+}
+
+.ip-addr{
+    color:var(--accent);
+    font-weight:bold;
+    font-size:18px;
+}
+
+.port-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.port-table th{
+    text-align:left;
+    padding:12px 25px;
+    background:rgba(0,0,0,0.2);
+    color:#94a3b8;
+}
+
+.port-table td{
+    padding:12px 25px;
+    border-top:1px solid var(--border);
+}
+
+.status-open{
+    color:lime;
+    font-weight:bold;
+}
+
+.back-btn{
+    display:block;
+    text-align:center;
+    margin-top:30px;
+    color:var(--primary);
+    text-decoration:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="report-header">
+
+    <h1>NETWORK_AUDIT_LOG</h1>
+
+    <p>Scan Complete • Data Acquired</p>
+
+</div>
+
+
+{% for host in data %}
+
+<div class="host-card">
+
+    <div class="host-header">
+
+        <span class="ip-addr">
+            📡 {{ host.ip }}
+        </span>
+
+        <div>
+
+            <div style="color:var(--primary); font-size:13px;">
+                {{ host.os }}
+            </div>
+
+            <div>
+
+                {% if host.risk == "CRITICAL" %}
+                    <span style="color:red;">⚠ CRITICAL RISK</span>
+
+                {% elif host.risk == "HIGH" %}
+                    <span style="color:orange;">⚠ HIGH RISK</span>
+
+                {% elif host.risk == "MEDIUM" %}
+                    <span style="color:yellow;">⚠ MEDIUM RISK</span>
+
+                {% else %}
+                    <span style="color:lime;">✔ LOW RISK</span>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <table class="port-table">
+
+        <thead>
+
+            <tr>
+                <th>PORT</th>
+                <th>PROTOCOL</th>
+                <th>STATE</th>
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+        {% if host.ports %}
+
+            {% for port in host.ports %}
+
+            <tr>
+
+                <td>{{ port }}</td>
+
+                <td>TCP/IP</td>
+
+                <td class="status-open">
+                    ● OPEN
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <tr>
+
+                <td colspan="3"
+                style="color:red; text-align:center;">
+
+                    No Open Ports Found
+
+                </td>
+
+            </tr>
+
+        {% endif %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endfor %}
+
+<a href="/" class="back-btn">
+    ⬅ RETURN_TO_COMMAND_CENTER
+</a>
+
+</body>
+</html>
